@@ -69,19 +69,19 @@ specs = """
     Dados aceitáveis são os dados acima de 60%. Ou seja, valores considerados "Bom" e "Excelente".
 """
 
-BROKER_URL = "test.mosquitto.org"
+BROKER_URL = "broker.hivemq.com" #"test.mosquitto.org"
 BROKER_PORT = 1883
 
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
+print("Connecting to:", BROKER_URL, BROKER_PORT)
 client.connect(BROKER_URL, BROKER_PORT)
 
-client.subscribe("vibe_e_codas")
 
 client.loop_start()
 
 def on_message(client, userdata, message):
-    dados = f"Certeza: {message.topic}"
+    dados = f"Leitura do sensor: {message.payload.decode('utf-8')}"
     
     print(f"Mensagem recebida: {str(message.payload.decode('utf-8'))} no tópico {message.topic}")
     
@@ -100,7 +100,13 @@ def on_message(client, userdata, message):
 
     print(resultado.raw)
 
+def on_connect(client, userdata, flags, reason_code, properties):
+    print(f"Conectado! Resultado: {reason_code}")
+    client.subscribe("vibe_e_codas")
+
 client.on_message = on_message
+
+client.on_connect = on_connect
 
 import time
 time.sleep(30)
