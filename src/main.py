@@ -108,6 +108,7 @@ client.on_message = on_message
 
 client.on_connect = on_connect
 
+# Testes
 import time
 time.sleep(30)
 
